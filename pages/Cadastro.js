@@ -1,43 +1,317 @@
-import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Button } from 'react-native';
+import React, { useState, useEffect } from "react";
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    StyleSheet,
+    ImageBackground,
+    Modal,
+    Image,
+    TouchableWithoutFeedback,
 
-export default function App({navigation}) {
+} from "react-native";
+import * as SecureStore from "expo-secure-store";
+import Icon from "react-native-vector-icons/MaterialIcons";
+
+export default function LoginScreen({ navigation }) {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [fullName, setFullName] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalMsg, setModalMsg] = useState("");
+    const [successModalVisible, setSuccessModalVisible] = useState(false);
+    const [successModalMsg, setSuccessModalMsg] = useState("");
+
+    useEffect(() => {
+        const carregarCredenciais = async () => {
+            const emailSalvo = await SecureStore.getItemAsync("userEmail");
+            const senhaSalva = await SecureStore.getItemAsync("userPassword");
+
+            if (emailSalvo && senhaSalva) {
+                setEmail(emailSalvo);
+                setPassword(senhaSalva);
+            }
+        };
+        carregarCredenciais();
+    }, []);
+
+    const handleCadastro = async () => {
+        if (!email || !password || !fullName || !confirmPassword) {
+            setModalMsg("Todos os campos devem ser preenchidos.");
+            setModalVisible(true);
+            return;
+        }
+        if (password !== confirmPassword) {
+            setModalMsg("As senhas não coincidem.");
+            setModalVisible(true);
+            return;
+        }
+        try {
+            await SecureStore.setItemAsync("userFullName", fullName);
+            await SecureStore.setItemAsync("userEmail", email);
+            await SecureStore.setItemAsync("userPassword", password);
+            setSuccessModalMsg("Cadastro realizado com sucesso!");
+            setSuccessModalVisible(true);
+            setTimeout(() => {
+                setSuccessModalVisible(false);
+                navigation.navigate("Feed");
+            }, 1000);
+        } catch (error) {
+            setModalMsg("Erro ao salvar os dados de cadastro.");
+            setModalVisible(true);
+        }
+    };
+
     return (
-        <View style={styles.container}>
-            <Text style={styles.text}>De um nome para nossa linda capivara! 🌸</Text>
-            <TextInput style={styles.input} placeholder='Digite aqui'></TextInput>
-            <TouchableOpacity style={styles.button}
-                onPress={() => navigation.navigate("Feed")} >
-                <Text style={styles.buttonText} >ADOTAR</Text>
-            </TouchableOpacity>
-        </View>
+        <ImageBackground
+            source={require("../assets/fundoHome (6).png")}
+            style={styles.background}
+        >
+            <View style={styles.container}>
+                <Modal transparent={true} visible={modalVisible} animationType="fade">
+                    <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+                        <View style={styles.modalContainer}>
+                            <TouchableWithoutFeedback>
+                                <View style={styles.modalContent}>
+                                    <Text style={styles.modalText}>{modalMsg}</Text>
+                                    <TouchableOpacity
+                                        style={styles.modalButton}
+                                        onPress={() => setModalVisible(false)}
+                                    >
+                                        <Text style={styles.modalButtonText}>OK</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </Modal>
+
+                <Modal
+                    transparent={true}
+                    visible={successModalVisible}
+                    animationType="fade"
+                >
+                    <TouchableWithoutFeedback
+                        onPress={() => setSuccessModalVisible(false)}
+                    >
+                        <View style={styles.modalContainer}>
+                            <TouchableWithoutFeedback>
+                                <View style={styles.modalContent}>
+                                    <Text style={styles.modalText}>{successModalMsg}</Text>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </Modal>
+                <Image
+                    source={require("../assets/iconLogin.png")}
+                    style={styles.iconOverlay}
+                />
+                <View style={styles.div}>
+                    <TextInput
+                        style={styles.input1}
+                        placeholder="Nome Completo"
+                        placeholderTextColor="#747474"
+                        value={fullName}
+                        onChangeText={setFullName}
+                        autoCapitalize="words"
+                    />
+                    <TextInput
+                        style={styles.input1}
+                        placeholder="Email"
+                        placeholderTextColor="#747474"
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                    />
+                    <View style={styles.passwordContainer}>
+                        <TextInput
+                            style={[styles.input, { paddingRight: 40 }]}
+                            placeholder="Senha"
+                            placeholderTextColor="#747474"
+                            secureTextEntry={!showPassword}
+                            value={password}
+                            onChangeText={setPassword}
+                        />
+                        <TouchableOpacity
+                            onPress={() => setShowPassword(!showPassword)}
+                            style={styles.eyeIcon}
+                        >
+                            <Icon
+                                name={showPassword ? "visibility" : "visibility-off"}
+                                size={20}
+                                color="#747474"
+                            />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.passwordContainer}>
+                        <TextInput
+                            style={[styles.input, { paddingRight: 40 }]}
+                            placeholder="Confirmar Senha"
+                            placeholderTextColor="#747474"
+                            secureTextEntry={!showConfirmPassword}
+                            value={confirmPassword}
+                            onChangeText={setConfirmPassword}
+                        />
+                        <TouchableOpacity
+                            onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                            style={styles.eyeIcon}
+                        >
+                            <Icon
+                                name={showConfirmPassword ? "visibility" : "visibility-off"}
+                                size={20}
+                                color="#747474"
+                            />
+                        </TouchableOpacity>
+                    </View>
+                    <TouchableOpacity style={styles.button} onPress={handleCadastro}>
+                        <Text style={styles.buttonText}>Cadastrar</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
+    background: {
+        flex: 1,
+        resizeMode: "cover",
+    },
     container: {
         flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 20,
     },
-
-    text: {
-        fontSize: 18,
+    div: {
+        width: "90%",
+        alignItems: "center",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        backgroundColor: "rgba(251, 141, 159, 0.53)",
+        paddingTop: 50,
+        paddingBottom: 50,
+        paddingHorizontal: 20,
+        borderRadius: 20,
+        position: "relative",
     },
-
-    input: {
+    logo: {
         width: 200,
-        height: 40,
+        height: 200,
+        marginBottom: 60,
+        marginTop: -80,
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: "bold",
+        color: "#FFF",
+        marginBottom: 20,
+    },
+    input1: {
+        width: "90%",
+        backgroundColor: "#FFF",
+        paddingHorizontal: 15,
+        borderRadius: 10,
+        marginBottom: 15,
         borderWidth: 1,
-        borderRadius: 5,
-        padding: 10,
-        marginTop: 20,
+        borderColor: "#E0D6CC",
+        height: 50,
+        paddingVertical: 10,
     },
-
+    input: {
+        width: "100%",
+        backgroundColor: "#FFF",
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: "#E0D6CC",
+        height: 50,
+    },
     button: {
-        marginTop: 20,
-        width: 200,
-        boxShadow: '4px 4px 4px rgb(186, 45, 104)',
+        width: "90%",
+        backgroundColor: "#FB6B90",
+        padding: 15,
+        borderRadius: 10,
+        alignItems: "center",
+    },
+    buttonText: {
+        color: "#FFF",
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    passwordContainer: {
+        position: "relative",
+        width: "90%",
+        marginBottom: 15,
+    },
+    eyeIcon: {
+        position: "absolute",
+        right: 15,
+        top: "50%",
+        transform: [{ translateY: -10 }],
+    },
+    person: {
+        marginBottom: -40,
+    },
+    iconOverlay: {
+        position: "absolute",
+        top: 125,
+        alignSelf: "center",
+        zIndex: 1,
+        width: 100,
+        height: 100,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0,0,0,0.5)",
+    },
+    modalContent: {
+        backgroundColor: "#fff",
+        padding: 30,
+        borderRadius: 10,
+        alignItems: "center",
+        width: "80%",
+    },
+    modalText: {
+        fontSize: 18,
+        marginBottom: 20,
+        textAlign: "center",
+    },
+    modalButton: {
+        backgroundColor: "#FB6B90",
+        padding: 10,
+        borderRadius: 5,
+    },
+    modalButtonText: {
+        color: "#FFF",
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    successModalContent: {
+        backgroundColor: "#4CAF50",
+        padding: 20,
+        borderRadius: 10,
+        width: "80%",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    successModalText: {
+        color: "#FFF",
+        fontSize: 18,
+        fontWeight: "bold",
+        textAlign: "center",
+        alignSelf: "center",
+        marginVertical: 0, 
+        paddingVertical: 0, 
     },
 });
