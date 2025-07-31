@@ -119,6 +119,9 @@ export default function Post() {
                 </Text>
             </TouchableOpacity>
         </View>
+
+        
+        
     )
 }
 // ...existing code...
@@ -130,6 +133,8 @@ const styles = StyleSheet.create({
         height: 380,
         backgroundColor: "#ffffff",
         borderRadius: 20,
+        marginBottom: 20,
+        marginTop: 20,
     },
     postImage: {
         width: 250,
