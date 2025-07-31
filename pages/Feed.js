@@ -1,21 +1,36 @@
 import React from 'react';
 import Post from '../components/Post';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Button } from 'react-native';
+import { StyleSheet, View, ImageBackground} from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function App() {
     return (
+            <ImageBackground
+              source={require("../assets/fundoHome (6).png")}
+              style={styles.background}
+              resizeMode="cover"
+            >
+                <ScrollView>
         <View style={styles.container}>
             <Post />
+            <Post />
+            <Post />
         </View>
+        </ScrollView>
+        </ImageBackground>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    background: {
         flex: 1,
-        backgroundColor: '#FB8DA0',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
+        justifyContent: "center",
+        alignItems: "center",
+      },
+      container: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      },
 
 });
