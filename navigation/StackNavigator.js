@@ -14,8 +14,11 @@ export default function StackNavigator() {
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Cadastro" component={Cadastro} />
-            <Stack.Screen name="Feed" component={Feed} />
-            <Stack.Screen name="Drawer" component={DrawerNavigator} />
+            <Stack.Screen 
+            name="Feed" 
+            component={DrawerNavigator}
+            options={{ headerShown: false }} 
+            />
         </Stack.Navigator>
     );
 }
