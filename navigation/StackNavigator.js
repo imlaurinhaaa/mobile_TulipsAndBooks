@@ -9,9 +9,23 @@ const Stack = createNativeStackNavigator();
 export default function StackNavigator() {
     return (
         <Stack.Navigator initialRouteName="Login">
-            <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="Cadastro" component={Cadastro} />
-            <Stack.Screen name="Home" component={DrawerNavigator} />
+            <Stack.Screen 
+            name="Login" 
+            component={Login} 
+            options={{ headerShown: false }} 
+            />
+
+            <Stack.Screen 
+            name="Cadastro" 
+            component={Cadastro} 
+            options={{ headerShown: false }} 
+            />
+
+            <Stack.Screen 
+            name="Feed" 
+            component={DrawerNavigator}
+            options={{ headerShown: false }} 
+            />
         </Stack.Navigator>
     );
 }

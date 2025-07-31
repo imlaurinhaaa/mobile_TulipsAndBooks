@@ -7,7 +7,7 @@ export default function App({navigation}) {
             <Text style={styles.text}>De um nome para nossa linda capivara! 🌸</Text>
             <TextInput style={styles.input} placeholder='Digite aqui'></TextInput>
             <TouchableOpacity style={styles.button}
-                onPress={() => navigation.navigate("Feed")} >
+                onPress={() => navigation.replace("Feed")} >
                 <Text style={styles.buttonText} >ADOTAR</Text>
             </TouchableOpacity>
         </View>
